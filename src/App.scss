@@ -1,0 +1,14 @@
+@import "./variable.scss";
+
+.peaks {
+    .navbar {
+        height: 8em;
+        width: 100%;
+        background-color: $primary-color;
+    }
+    .footer{
+        height: 12em;
+        width: 100%;
+        background-color: $primary-color;
+    }
+}
