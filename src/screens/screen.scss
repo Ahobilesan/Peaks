@@ -1,0 +1,25 @@
+.list {
+    padding: 1em;
+
+    .cards {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+
+        >div.first {
+            display: block;
+            @media screen and (min-width:700px) {
+                display: flex;
+                justify-content: center;
+            }
+
+            .group {
+                @media screen and (min-width:700px) {
+                    display: flex;
+                    flex-flow: wrap;
+                    max-width: calc(50% - 1em);
+                }
+            }
+        }
+    }
+}
