@@ -1,12 +1,69 @@
 @import "./variable.scss";
 
 .peaks {
+    * {
+        box-sizing: border-box;
+    }
+
     .navbar {
         height: 8em;
         width: 100%;
         background-color: $primary-color;
+
+        .wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+            max-width: $max-screen-size;
+            margin: auto;
+            padding: 1em;
+        }
+
+        .brand {
+
+            img {
+                max-height: 3em;
+                margin: auto;
+            }
+        }
     }
-    .footer{
+
+    >section {
+        height: 100%;
+        width: 100%;
+        max-width: $max-screen-size;
+        margin: auto;
+
+        &.empty {
+
+            >div {
+                display: flex;
+                height: 100%;
+            }
+
+            height: calc(100vh - 20em);
+        }
+
+        .page-title {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+
+            h1 {
+                font-size: 3em;
+                margin: 0.3em 0;
+                padding: 0 1rem;
+            }
+
+            .actions {
+                display: flex;
+                align-items: center;
+            }
+        }
+    }
+
+    .footer {
         height: 12em;
         width: 100%;
         background-color: $primary-color;
