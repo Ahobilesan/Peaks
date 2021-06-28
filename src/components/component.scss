@@ -13,7 +13,7 @@
 
     &.mini {
         height: 200px;
-        width: 250px;
+        width: 350px;
 
         .header {
             font-size: 1em !important;
@@ -21,6 +21,10 @@
 
         .description {
             display: none !important;
+        }
+
+        @media screen and (min-width:$max-screen-size) {
+            width: 250px;
         }
     }
 
@@ -32,7 +36,11 @@
 
     &.large {
         height: 432px;
-        width: 545px;
+        width: calc(700px + 2em) !important;
+
+        @media screen and (min-width:$max-screen-size) {
+            width: 545px !important;
+        }
     }
 
     img {
@@ -76,7 +84,7 @@
         }
     }
 
-    @media screen and (max-width: 500px) {
+    @media screen and (max-width: 767px) {
 
         &.mini,
         &.small,
@@ -161,5 +169,64 @@
         &:hover {
             background-color: $primary-color-opacity;
         }
+    }
+}
+
+.input {
+    display: flex;
+    border-bottom: 2px solid $light-color;
+    padding: 0.5rem 1rem;
+    overflow: hidden;
+
+    &:not(:focus-within) {
+        input {
+            position: absolute;
+            width: 0em !important;
+        }
+    }
+
+    &:focus-within {
+        background-color: $tertiary-color-opacity;
+
+        input {
+            position: relative;
+            width: auto;
+        }
+    }
+
+    input {
+        background-color: transparent;
+        outline: 0;
+        border: none;
+        color: $light-color;
+
+        &::placeholder {
+            color: $tertiary-color
+        }
+
+        &[type="search"] {
+
+            @media screen and (max-width:500px) {
+                width: 8em
+            }
+
+            &::-webkit-search-decoration,
+            &::-webkit-search-cancel-button,
+            &::-webkit-search-results-button,
+            &::-webkit-search-results-decoration {
+                display: none;
+            }
+
+            &::-ms-clear,
+            &::-ms-reveal {
+                display: none;
+                width: 0;
+                height: 0;
+            }
+        }
+    }
+
+    .search-icon {
+        cursor: pointer;
     }
 }
