@@ -3,12 +3,17 @@ import API from "./backend/api"
 import Loader from "./components/loading"
 import Dropdown from "./components/dropdown"
 import Input from "./components/input"
+import Button from "./components/button"
 import BRAND from "./assets/Logo_White.png"
 import './App.scss';
 
 const List = React.lazy(() => import("./screens/list"));
 const defaultState = {
   loading: true,
+  screen: {
+    height: window.innerHeight,
+    width: window.innerWidth,
+  },
   stories: [],
   _stories: [],
   bookmark: false
@@ -27,9 +32,9 @@ class App extends React.Component {
         <nav className="navbar">
           <div className="wrapper">
             <div className="brand">
-              <img src={BRAND} />
+              <img alt="The Peaks" src={BRAND} />
             </div>
-            <div><Input type="search" /></div>
+            <div className="search-wrapper"><Input type="search" placeholder="Search all news" /></div>
           </div>
         </nav>
 
@@ -37,12 +42,12 @@ class App extends React.Component {
           {!this.state.loading && <div className="page-title">
             {this.state.bookmark ? <h1>All Bookmark</h1> : <h1>Top Stories</h1>}
             <div className="actions">
-              {!this.state.bookmark && <div className="primary-button" onClick={this.handleBookmarkSwitch.bind(this)}>VIEW BOOKMARK</div>}
+              <Button primary text={this.state.bookmark ? "VIEW STORIES" : "VIEW BOOKMARK"} onClick={this.handleBookmarkSwitch.bind(this)} />
               <Dropdown placeholder="Select Category" value="new" options={category} onChange={this.filterStories.bind(this)} />
             </div>
           </div>}
           <React.Suspense fallback={<Loader detail="Loading Stories" />}>
-            <List loading={this.state.loading} stories={this.state.stories} />
+            <List global={this.state} loading={this.state.loading} stories={this.state.stories} />
           </React.Suspense>
         </section>
         <footer className="footer"></footer>
@@ -51,7 +56,20 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    this.getStories()
+    window.addEventListener('resize', this.screenResize.bind(this));
+    this.getStories();
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.screenResize.bind(this));
+  }
+
+  screenResize() {
+    let screen = {
+      height: window.innerHeight,
+      width: window.innerWidth,
+    }
+    this.setState({ screen })
   }
 
   async getStories() {
