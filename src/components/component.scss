@@ -156,15 +156,26 @@
 
 
 .button {
-    display: inline-block;
-    color: $light-color;
+    display: flex;
+    align-items: center;
     padding: 0.2em 0.5em;
     cursor: pointer;
     border-radius: 0.2em;
     margin-right: 1em;
 
+    >div {
+        white-space: pre;
+        margin-bottom: 0.1em;
+    }
+
+    img {
+        margin-right: 0.5em;
+        max-height: 1.2em;
+    }
+
     &.primary {
         background-color: $primary-color;
+        color: $light-color;
 
         &:hover {
             background-color: $primary-color-opacity;

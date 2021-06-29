@@ -1,10 +1,15 @@
 import React from 'react';
 import API from "./backend/api"
+
+//Components
 import Loader from "./components/loading"
 import Dropdown from "./components/dropdown"
 import Input from "./components/input"
 import Button from "./components/button"
+
+// Images
 import BRAND from "./assets/Logo_White.png"
+
 import './App.scss';
 
 const List = React.lazy(() => import("./screens/list"));
@@ -42,7 +47,7 @@ class App extends React.Component {
           {!this.state.loading && <div className="page-title">
             {this.state.bookmark ? <h1>All Bookmark</h1> : <h1>Top Stories</h1>}
             <div className="actions">
-              <Button primary text={this.state.bookmark ? "VIEW STORIES" : "VIEW BOOKMARK"} onClick={this.handleBookmarkSwitch.bind(this)} />
+              <Button primary bookmark={!this.state.bookmark} stories={this.state.bookmark} text={this.state.bookmark ? "BACK TO STORIES" : "VIEW BOOKMARK"} onClick={this.handleBookmarkSwitch.bind(this)} />
               <Dropdown placeholder="Select Category" value="new" options={category} onChange={this.filterStories.bind(this)} />
             </div>
           </div>}
