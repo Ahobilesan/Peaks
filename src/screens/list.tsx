@@ -1,4 +1,4 @@
-import React, { MouseEventHandler } from "react";
+import React from "react";
 import { STORY } from "../backend/interface";
 import Card from "../components/card"
 import Loader from "../components/loading"

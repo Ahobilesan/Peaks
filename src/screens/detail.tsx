@@ -20,7 +20,7 @@ class Detail extends React.Component<{ global?: any, story: STORY }> {
                 <article>{this.props.story.body}</article>
             </div>}
             {!this.state.loading && <div className="image-wrapper" style={{ backgroundImage: this.props.story.image.thumbnail }}>
-                <img src={this.props.story.image.url} />
+                <img alt="" src={this.props.story.image.url} />
             </div>}
         </div>
     }
