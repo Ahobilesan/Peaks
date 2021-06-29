@@ -1,6 +1,8 @@
 @import "./variable.scss";
 
 .peaks {
+    height: 100%;
+
     * {
         box-sizing: border-box;
     }
@@ -40,7 +42,7 @@
     }
 
     >section {
-        height: 100%;
+        min-height: calc(100% - 280px);
         width: 100%;
         max-width: $max-screen-size;
 
@@ -48,14 +50,22 @@
             margin: auto;
         }
 
-        &.empty {
+        .breadcrumb {
+            margin-top: 1em;
+            padding-left: 1em;
 
-            >div:not(.page-title) {
-                display: flex;
-                height: 100%;
+            .previous {
+                color: $primary-color;
+                cursor: pointer;
             }
 
-            height: calc(100vh - 20em);
+            .divider {
+                color: $dark-color-opacity
+            }
+
+            .current {
+                color: $secondary-color
+            }
         }
 
         .page-title {
@@ -68,14 +78,18 @@
                 flex-direction: row;
             }
 
+
             h1 {
                 font-size: 1.5em;
-                margin: 0.3em 0;
                 padding: 0 1rem;
 
                 @media screen and (min-width:$max-screen-size) {
                     font-size: 3em;
                 }
+            }
+
+            >.button {
+                margin-top: 3em;
             }
 
             .actions {
