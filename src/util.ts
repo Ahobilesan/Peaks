@@ -1,12 +1,6 @@
 export function moment(_date: string) {
-    let monthsName = ["January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December",
-    ]
-
     let obj = new Date(_date);
-    if (obj instanceof Date) {
-
-    } else {
+    if (isNaN(obj.getDate())) {
         obj = new Date()
     }
 
@@ -40,9 +34,9 @@ export function moment(_date: string) {
         }
     }
 
-    let day = obj.getDate()
-    let month = obj.getMonth()
-    let year = obj.getFullYear()
+    function locale(_locale: string) {
+        return new Intl.DateTimeFormat(_locale, { dateStyle: 'medium', timeStyle: 'medium' }).format(obj)
+    }
 
-    return { date: `${day} ${monthsName[month]} ${year}`, fromNow: relativeDate }
+    return { locale, fromNow: relativeDate }
 }

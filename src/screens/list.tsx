@@ -1,5 +1,6 @@
 import React from "react";
 import { STORY } from "../backend/interface";
+
 import Card from "../components/card"
 import Loader from "../components/loading"
 import "./screen.scss"
@@ -14,7 +15,7 @@ class List extends React.Component<{ global?: any, loading: boolean, bookmark?: 
             {!this.props.loading &&
                 <div className="cards">
                     {this.props.stories && this.props.stories.map((story: STORY, id) => {
-                        if (this.props.global.screen.width <= 1200 || this.props.stories.length <= 4) {
+                        if (this.props.global.screen.name !== "home" || this.props.global.screen.width <= 1200 || this.props.stories.length <= 4) {
                             return <Card bookmark={this.props.bookmark} onClick={this.handleClick.bind(this)} key={id} idx={id} story={story} />
                         } else {
                             if (id > 4) {
@@ -37,9 +38,9 @@ class List extends React.Component<{ global?: any, loading: boolean, bookmark?: 
                         }
                         return undefined
                     })}
-                    {(!this.props.stories || this.props.stories.length === 0) && <div>No Stories Found</div>}
                 </div>
             }
+            {!this.props.loading && (!this.props.stories || this.props.stories.length === 0) && <div className="no-stories">No Stories Found</div>}
             {this.props.loading && <Loader detail="Loading Stories" />}
         </div>
     }

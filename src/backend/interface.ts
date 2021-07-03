@@ -1,22 +1,29 @@
 // Data Types
 export interface STORY {
-    body: string;
-    datePublished: string;
-    description: string;
+    apiUrl: string;
+    fields: {
+        headline: string;
+        byline: string;
+        thumbnail: string;
+        body: string;
+    }
     id: string;
-    image: any;
-    language: string;
-    provider: any
-    snippet: string
-    title: string;
-    url: string;
+    isHosted: boolean;
+    pillarId: string;
+    pillarName: string;
+    sectionId: string;
+    sectionName: string;
+    type: string;
+    webPublicationDate: string;
+    webTitle: string;
+    webUrl: string;
 }
 
 // Return Types
 
 export interface STORIES {
     error: false;
-    result: [STORY];
+    data: [STORY];
 }
 
 export interface ERROR {

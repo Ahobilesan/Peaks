@@ -1,4 +1,5 @@
 import React from 'react';
+import URL from "url-parse"
 import API from "./backend/api"
 
 //Components
@@ -19,6 +20,7 @@ const Detail = React.lazy(() => import("./screens/detail"));
 const defaultState = {
   loading: true,
   screen: {
+    name: "home",
     height: window.innerHeight,
     width: window.innerWidth,
   },
@@ -27,16 +29,17 @@ const defaultState = {
   bookmark: {},
   bookmarks: [],
   saveBookmark: false,
-  showDetail: false,
-  showBookmark: false,
+  category: "newest",
+  search: ""
 }
 const category = [
-  { text: "Newest first", value: "new" },
-  { text: "Oldest first", value: "old" },
-  { text: "Most popular", value: "popular" },
+  { text: "Newest first", value: "newest" },
+  { text: "Oldest first", value: "oldest" },
+  // { text: "Most popular", value: "relevance" },
 ]
 class App extends React.Component {
-  state = { ...defaultState }
+  state = { ...defaultState, back: this.navigate.bind(this, "home") }
+
   render() {
     return (
       <div className="peaks">
@@ -44,34 +47,30 @@ class App extends React.Component {
         <nav className="navbar">
           <div className="wrapper">
             <div className="brand">
-              <img alt="The Peaks" src={BRAND} />
+              <img alt="The Peaks" src={BRAND} onClick={this.navigate.bind(this, "home")} />
             </div>
-            <div className="search-wrapper"><Input type="search" placeholder="Search all news" /></div>
+            <div className="search-wrapper"><Input type="search" placeholder="Search all news" onChange={this.search.bind(this)} /></div>
           </div>
         </nav>
 
-        <section className={!this.state.stories.length ? "empty" : "stories"}>
-          {this.state.showBookmark && <div className="breadcrumb">
-            <span className="previous" onClick={this.backToStories.bind(this)}>Stories</span> <span className="divider">/</span> <span className="current">Bookmarks</span>
+        <section className={!this.state.stories || !this.state.stories.length ? "empty" : "stories"}>
+          {this.state.screen.name === "bookmark" && <div className="breadcrumb">
+            <span className="previous" onClick={this.navigate.bind(this, "home")}>Stories</span> <span className="divider">/</span> <span className="current">Bookmarks</span>
           </div>}
-          {this.state.showDetail && <div className="breadcrumb">
-            <span className="previous" onClick={this.backToStories.bind(this)}>Stories</span> <span className="divider">/</span> <span className="current">Details</span>
+          {this.state.screen.name === "detail" && <div className="breadcrumb">
+            <span className="previous" onClick={this.navigate.bind(this, "home")}>Stories</span> <span className="divider">/</span> <span className="current">Details</span>
           </div>}
-          {!this.state.loading && !this.state.showDetail && <div className="page-title">
-            {this.state.showBookmark ? <h1>All Bookmark</h1> : <h1>Top Stories</h1>}
+          {!this.state.loading && this.state.screen.name !== "detail" && <div className="page-title">
+            {this.state.screen.name === "bookmark" ? <h1>All Bookmark</h1> : this.state.search ? <h1>Search results</h1> : <h1>Top Stories</h1>}
             <div className="actions">
-
-              {!this.state.showBookmark && <Button primary bookmark stories={this.state.showBookmark} text={"VIEW BOOKMARK"} onClick={this.handleBookmarkSwitch.bind(this)} />}
-              <Dropdown placeholder="Select Category" value="new" options={category} onChange={this.filterStories.bind(this)} />
+              {this.state.screen.name !== "bookmark" && <Button primary bookmark stories={this.state.screen.name === "bookmark"} text={"VIEW BOOKMARK"} onClick={this.navigate.bind(this, "bookmark")} />}
+              {(this.state.screen.name === "search" || this.state.screen.name === "home") && <Dropdown placeholder="Select Category" value={this.state.category} options={category} onChange={this.filterStories.bind(this)} />}
             </div>
           </div>}
-          {!this.state.loading && this.state.showDetail && <div className="page-title">
-            <Button primary bookmark text={!this.state.saveBookmark ? "ADD BOOKMARK" : "REMOVE BOOKMARK"} onClick={this.handleBookmarkSave.bind(this)} />
-          </div>}
-          <React.Suspense fallback={<Loader detail="Loading Stories" />}>
-            {!this.state.showDetail && !this.state.showBookmark && <List global={this.state} loading={this.state.loading} stories={this.state.stories} onSelect={this.showDetail.bind(this)} />}
-            {!this.state.showDetail && this.state.showBookmark && <List global={this.state} loading={this.state.loading} bookmark stories={this.state.bookmarks} onSelect={this.showDetail.bind(this)} />}
-            {this.state.showDetail && !this.state.showBookmark && <Detail story={(this.state.story as STORY)} global={this.state} />}
+          <React.Suspense fallback={<div className="loader-wrapper"><Loader detail="Loading Stories" /></div>}>
+            {this.state.screen.name === "home" && <List global={this.state} loading={this.state.loading} stories={this.state.stories} onSelect={this.showDetail.bind(this)} />}
+            {this.state.screen.name === "bookmark" && <List global={this.state} loading={this.state.loading} bookmark stories={this.state.bookmarks} onSelect={this.showDetail.bind(this)} />}
+            {this.state.screen.name === "detail" && <Detail story={(this.state.story as STORY)} global={this.state} />}
           </React.Suspense>
         </section>
         <footer className="footer"></footer>
@@ -81,7 +80,8 @@ class App extends React.Component {
 
   componentDidMount() {
     window.addEventListener('resize', this.screenResize.bind(this));
-    this.getStories();
+    (window as any).getState = () => this.state
+    this.router()
   }
 
   componentWillUnmount() {
@@ -90,38 +90,66 @@ class App extends React.Component {
 
   screenResize() {
     let screen = {
+      name: this.state.screen.name,
       height: window.innerHeight,
       width: window.innerWidth,
     }
     this.setState({ screen })
   }
 
-  async getStories() {
+  router() {
+    let url = new URL(window.location.href, true);
+    let page = url.pathname.substr(1)
+    if (page !== "detail" && page !== "bookmark" && page !== "home") {
+      this.navigate("home");
+    }
+
+    this.setState({
+      screen: {
+        name: page,
+        height: window.innerHeight,
+        width: window.innerWidth
+      },
+      loading: page === "home" ? true : false
+    }, () => {
+      if (page === "home") {
+        this.getStories();
+      } else if (page === "bookmark") {
+        this.getBookmarks()
+      }
+    })
+  }
+
+  navigate(page: string) {
+    let href = `${window.location.origin}/${page}`
+    window.location.assign(href)
+  }
+
+  back() {
+    this.navigate("home")
+  }
+
+  async getStories(page?: number) {
     try {
       let stories: any = []
-      let res = await API.stories.list();
+      let res: any = await API.list(page, this.state.search, this.state.category);
       if (res.error === false) {
-        stories = res.result.value
+        stories = res.data.results
       }
       this.setState({ stories, loading: false })
-      // Testing, will be removed on production
-      // localStorage.setItem("stories", JSON.stringify(stories))
-      // this.setState({ stories: JSON.parse(localStorage.getItem("stories")!), loading: false })
-
     } catch (error) {
       console.log(error)
     }
   }
 
-  backToStories() {
-    this.setState({ story: {}, stories: [], loading: true, showBookmark: false, showDetail: false })
-    this.getStories()
-  }
-
-  handleBookmarkSwitch() {
+  getBookmarks() {
     let oldBookmarks = localStorage.getItem("bookmarks")
     let bookmarks = oldBookmarks ? JSON.parse(oldBookmarks) : [];
-    this.setState((state: any) => ({ bookmarks, showDetail: false, showBookmark: !state.showBookmark }))
+    this.setState({ bookmarks })
+  }
+
+  search(data: string) {
+    this.setState({ search: data, loading: true }, this.getStories.bind(this))
   }
 
   handleBookmarkSave() {
@@ -140,42 +168,11 @@ class App extends React.Component {
   }
 
   filterStories(option: any) {
-    let { stories } = this.state;
-
-    let sorted = stories.sort((f: any, s: any) => {
-      let _s = new Date(s.datePublished).valueOf(), _f = new Date(f.datePublished).valueOf()
-      if (_f < _s) {
-        return 1
-      }
-
-      if (_f > _s) {
-        return -1
-      }
-
-      if (_f === _s) {
-        return 0
-      }
-      return -1
-    });
-
-    if (option.value === "new") {
-      this.setState({ stories: sorted })
-    }
-
-    if (option.value === "old") {
-      this.setState({ stories: sorted.reverse() })
-    }
-
-    if (option.value === "popular") {
-      this.setState({ stories: sorted.reverse() })
-    }
+    this.setState({ category: option.value, loading: true }, this.getStories.bind(this))
   }
 
   showDetail(story: STORY) {
-    let oldBookmarks = localStorage.getItem("bookmarks")
-    let bookmarks = oldBookmarks ? JSON.parse(oldBookmarks) : [];
-    let idx = bookmarks.findIndex((x: any) => x.id === story.id)
-    this.setState({ story, saveBookmark: idx !== -1 ? true : false, showBookmark: false, showDetail: true })
+    this.navigate(`detail?id=${story.id}`)
   }
 }
 
