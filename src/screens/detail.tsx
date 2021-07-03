@@ -80,12 +80,16 @@ class Detail extends React.Component<{ global?: any, story: STORY }> {
         let bookmarks = oldBookmarks ? JSON.parse(oldBookmarks) : []
         if (saveBookmark === true) {
             let idx = bookmarks.findIndex((x: any) => x.id === (this.state.story as any).id)
-            if (idx !== -1)
-                bookmarks.splice(1, idx)
+            if (idx !== -1) {
+                bookmarks.splice(idx, 1)
+                this.props.global.notify("Bookmark Removed", "error", true)
+            }
         } else {
             bookmarks.push(this.state.story)
-            localStorage.setItem("bookmarks", JSON.stringify(bookmarks))
+            this.props.global.notify("Bookmark Saved", "success", true)
         }
+
+        localStorage.setItem("bookmarks", JSON.stringify(bookmarks))
         this.setState({ saveBookmark: !saveBookmark })
     }
 }

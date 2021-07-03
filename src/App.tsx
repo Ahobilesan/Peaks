@@ -7,6 +7,7 @@ import Loader from "./components/loading"
 import Dropdown from "./components/dropdown"
 import Input from "./components/input"
 import Button from "./components/button"
+import Notification from "./components/notification"
 
 // Images
 import BRAND from "./assets/Logo_White.png"
@@ -38,12 +39,11 @@ const category = [
   // { text: "Most popular", value: "relevance" },
 ]
 class App extends React.Component {
-  state = { ...defaultState, back: this.navigate.bind(this, "home") }
+  state = { ...defaultState, back: this.navigate.bind(this, "home"), notify: this.notify }
 
   render() {
     return (
       <div className="peaks">
-
         <nav className="navbar">
           <div className="wrapper">
             <div className="brand">
@@ -73,6 +73,7 @@ class App extends React.Component {
             {this.state.screen.name === "detail" && <Detail story={(this.state.story as STORY)} global={this.state} />}
           </React.Suspense>
         </section>
+        <Notification />
         <footer className="footer"></footer>
       </div>
     );
@@ -127,6 +128,10 @@ class App extends React.Component {
 
   back() {
     this.navigate("home")
+  }
+
+  notify(message: string, type: "error" | "success", bookmark?: boolean, showTime?: number) {
+    window.dispatchEvent(new CustomEvent("notify", { detail: { type, message, showTime, bookmark } }))
   }
 
   async getStories(page?: number) {
